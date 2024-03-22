@@ -67,6 +67,10 @@ public class NewtonRaphson extends Stage {
         solveButton.setOnAction(e -> solve());
         inputGrid.add(solveButton, 1, 5);
 
+        Button ayudaButton = new Button("Ayuda");
+        ayudaButton.setOnAction(e -> mostrarAyuda());
+        inputGrid.add(ayudaButton, 1, 6);
+
         tableView = new TableView<>();
         TableColumn<IterationResult, Double> xiColumn = new TableColumn<>("xi");
         xiColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getXi()).asObject());
@@ -91,6 +95,20 @@ public class NewtonRaphson extends Stage {
         Scene scene = new Scene(root, 600, 400);
         setScene(scene);
         show();
+    }
+    private void mostrarAyuda() {
+        String mensaje =
+                "1. Se ingresa la ecuacion de esta forma: \n" +
+                        "   3*x^2_-4*x+_1\n" +
+                        "2. El \"_\" significa que debe de ir un espacio\n" +
+                        "3. Ingresa el valor inicial para x\n" +
+                        "3. Ingresa el error porcentual\n";
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Ayuda");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.getDialogPane().setPrefSize(600, 200);
+        alerta.showAndWait();
     }
 
     private void solve() {

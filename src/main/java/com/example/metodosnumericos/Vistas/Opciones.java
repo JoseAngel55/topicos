@@ -37,6 +37,7 @@ public class Opciones extends Stage {
         btnEG.setOnAction(event -> new EliminacionGaussiana());
         btnJacobi = new Button("Iniciar");
         lblJacobi = new Label("Jacobi: ");
+        btnJacobi.setOnAction(event -> new Jacobi());
         hbOp = new HBox(lblOpciones);
         hbOp.setAlignment(Pos.TOP_CENTER);
         hbRf = new HBox(lblAbierto, btnreglaF);

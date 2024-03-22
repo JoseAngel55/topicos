@@ -24,7 +24,7 @@ public class HelloApplication extends Application {
         lblIntegrantes = new Label("Integrantes");
         lblTitle = new Label("Proyecto metodos numericos");
         lblAngel = new Label("- Navarro Flores Jose Angel");
-        lblRafael = new Label("- Barranco Morales Rafael");
+        lblRafael = new Label("- Barranco Mendoza Rafael");
         lblRobert =new Label("- Duran Castillo Roberto Emmanuel");
         iniciar = new Button("Iniciar");
         iniciar.setOnAction(event -> new Opciones());

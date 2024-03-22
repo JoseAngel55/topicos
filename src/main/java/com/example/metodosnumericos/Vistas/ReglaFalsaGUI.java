@@ -62,6 +62,7 @@ public class ReglaFalsaGUI extends Stage {
         btnCalcular = new Button("Calcular");
         btnCalcular.setOnAction(event -> rf());
         btnAyuda = new Button("Ayuda");
+        btnAyuda.setOnAction(e -> mostrarAyuda());
         vbDer = new VBox(btnCalcular,btnAyuda);
         vbDer.setAlignment(Pos.CENTER_RIGHT);
         vbDer.setSpacing(20);
@@ -72,6 +73,19 @@ public class ReglaFalsaGUI extends Stage {
         vbContenedor = new VBox(vbSup,hbInf);
         vbContenedor.setSpacing(20);
         escena = new Scene(vbContenedor);
+    }
+    private void mostrarAyuda() {
+        String mensaje = "1. Se ingresa la ecuacion de esta forma: \n" +
+                "   3*x^2_-4*x+_1\n" +
+                "2. El \"_\" significa que debe de ir un espacio\n" +
+                "3. Error porcentual en la tabla de la primera iteracion sera 100 ya que\n" +
+                "no puede ser 0 para hacer las validaciones\n";
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Ayuda");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.getDialogPane().setPrefSize(600, 200);
+        alerta.showAndWait();
     }
 
     private void graficarFuncion() {
@@ -111,7 +125,7 @@ public class ReglaFalsaGUI extends Stage {
         stage.show();
     }
 
-    private void rf(){
+    private Alert rf(){
         String str = txtec.getText();
         String stra = txta.getText();
         String strb = txtb.getText();
@@ -154,22 +168,16 @@ public class ReglaFalsaGUI extends Stage {
         tableView.setItems(iteraciones);
         tableView.setPrefSize(400,400);
 
-        VBox vbox = new VBox(tableView);
-        vbox.setSpacing(10);
+//        VBox vbox = new VBox(tableView);
+//        vbox.setSpacing(10);
 
-        ScrollPane scrollPane = new ScrollPane(vbox);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-
-        hbInf.getChildren().add(scrollPane);
-
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Resultado del método");
-//        alert.setHeaderText(null);
-//        alert.getDialogPane().setContent(tableView);
-//        alert.getDialogPane().setPrefSize(700,700);
-//        alert.showAndWait();
-//        return alert;
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Resultado del método");
+        alert.setHeaderText(null);
+        alert.getDialogPane().setContent(tableView);
+        alert.getDialogPane().setPrefSize(700,700);
+        alert.showAndWait();
+        return alert;
     }
 
     private double resolverMetodo(Function<Double, Double> f, double a, double b, double ep, ObservableList<IteracionRF> iteraciones) {

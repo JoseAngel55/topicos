@@ -3,6 +3,7 @@ package com.example.metodosnumericos.Vistas;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -40,6 +41,20 @@ public class EliminacionGaussiana extends Stage {
         escena = new Scene(vbContenedor, 400, 300);
 
         btnAceptar.setOnAction(e -> crearMatriz());
+        btnAyuda.setOnAction(e -> mostrarAyuda());
+    }
+    private void mostrarAyuda() {
+        String mensaje = "1. En el campo de texto se ingresa un número que será el tamaño de tu matriz\n" +
+                "2. Presiona el botón Aceptar\n" +
+                "3. En los campos de texto en forma de matriz, ingresa tus coeficientes\n" +
+                "4. Y en la columna extra de la matriz, ingresa el resultado de tu sistema de ecuaciones\n" +
+                "5. Después, presiona Calcular y ya estaría tu resultado";
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Ayuda");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.getDialogPane().setPrefSize(600, 200);
+        alerta.showAndWait();
     }
     private void crearMatriz() {
         int numEc = Integer.parseInt(txtnumEc.getText());
