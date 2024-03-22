@@ -24,13 +24,11 @@ public class HelloApplication extends Application {
         lblIntegrantes = new Label("Integrantes");
         lblTitle = new Label("Proyecto metodos numericos");
         lblAngel = new Label("- Navarro Flores Jose Angel");
-        lblRafael = new Label("- Rafael");
+        lblRafael = new Label("- Barranco Morales Rafael");
         lblRobert =new Label("- Duran Castillo Roberto Emmanuel");
-        lblJAngel = new Label("- Herrera Morales Jose Angel");
-        lblYahir =  new Label("- Muñoz Hernandez Eric Yahir");
         iniciar = new Button("Iniciar");
         iniciar.setOnAction(event -> new Opciones());
-        vbContenedor = new VBox(lblIntegrantes,lblAngel,lblRobert,lblRafael,lblJAngel,lblYahir,iniciar);
+        vbContenedor = new VBox(lblIntegrantes,lblAngel,lblRobert,lblRafael,iniciar);
         vbContenedorSup = new VBox(lblTitle);
         vbContenedorSup.setAlignment(Pos.TOP_CENTER);
         vbContenedor.setAlignment(Pos.CENTER);
@@ -38,7 +36,7 @@ public class HelloApplication extends Application {
         bdpPanel.setCenter(vbContenedor);
         BorderPane.setAlignment(vbContenedor, Pos.CENTER);
         Scene scene = new Scene(bdpPanel);
-        //scene.getStylesheets().add(getClass().getResource("/Estilos/main.css").toString());
+        scene.getStylesheets().add(getClass().getResource("/Estilos/main.css").toString());
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();

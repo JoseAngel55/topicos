@@ -3,8 +3,6 @@ package com.example.metodosnumericos.Vistas;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -36,6 +34,7 @@ public class Opciones extends Stage {
         btnNR = new Button("Iniciar");
         btnNR.setOnAction(event -> new NewtonRaphson());
         btnEG = new Button("Iniciar");
+        btnEG.setOnAction(event -> new EliminacionGaussiana());
         btnJacobi = new Button("Iniciar");
         lblJacobi = new Label("Jacobi: ");
         hbOp = new HBox(lblOpciones);
@@ -51,6 +50,7 @@ public class Opciones extends Stage {
         vbContenedor = new VBox(hbOp,hbRf,hbNR,hbEG,hbJ);
         //vbContenedor.setAlignment(Pos.CENTER);
         escena = new Scene(vbContenedor, 600, 600);
+        escena.getStylesheets().add(getClass().getResource("/Estilos/opciones.css").toString());
     }
 
 }

@@ -1,0 +1,47 @@
+.label, .button {
+    -fx-font-size: 16px;
+    -fx-font-family: "Arial";
+    -fx-text-fill: #212529; /* Color de texto principal */
+}
+
+.button {
+    -fx-padding: 8px 16px;
+    -fx-background-color: #007bff; /* Color de fondo principal */
+    -fx-background-radius: 4px; /* Borde redondeado */
+    -fx-border-color: transparent;
+    -fx-text-fill: #fff; /* Color de texto */
+}
+
+.button:hover {
+    -fx-background-color: #0056b3; /* Color de fondo al pasar el cursor */
+}
+
+/* Estilos específicos para etiquetas */
+#titulo {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #007bff; /* Color de título */
+}
+
+#opciones {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333; /* Color de texto oscuro */
+}
+
+#labelJacobi {
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-text-fill: #555555; /* Color de texto gris */
+}
+
+/* Estilos para contenedores */
+.hbox {
+    -fx-spacing: 20px;
+    -fx-alignment: center;
+}
+
+.vbox {
+    -fx-spacing: 20px;
+    -fx-alignment: center;
+}

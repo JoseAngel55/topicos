@@ -1,5 +1,5 @@
 package com.example.metodosnumericos.Vistas;
-
+//
 //import javafx.geometry.Pos;
 //import javafx.scene.Scene;
 //import javafx.scene.control.Button;
@@ -8,158 +8,284 @@ package com.example.metodosnumericos.Vistas;
 //import javafx.scene.layout.HBox;
 //import javafx.scene.layout.VBox;
 //import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.stage.Stage;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
-import net.objecthunter.exp4j.function.Functions;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import java.util.function.Function;
-
 public class NewtonRaphson extends Stage {
-    private Scene scene;
-    private VBox vbox;
-    private HBox equationBox, parametersBox, buttonsBox;
-    private Label titleLabel, equationLabel, x0Label, epsilonLabel;
-    private TextField equationTextField, x0TextField, epsilonTextField;
-    private Button graphButton, calculateButton, helpButton;
+    private TextField functionField;
+    private TextField derivativeField;
+    private TextField initialValueField;
+    private TextField errorField;
+    private TableView<IterationResult> tableView;
 
     public NewtonRaphson() {
-        createUI();
-        this.setTitle("Método de Newton-Raphson");
-        this.setScene(scene);
-        this.show();
-        this.setWidth(450);
-        this.setHeight(350);
+        setTitle("Newton-Raphson Solver");
+
+        BorderPane root = new BorderPane();
+
+        GridPane inputGrid = new GridPane();
+        inputGrid.setAlignment(Pos.CENTER);
+        inputGrid.setHgap(10);
+        inputGrid.setVgap(10);
+        inputGrid.setPadding(new Insets(25, 25, 25, 25));
+
+        Label sceneTitle = new Label("Newton-Raphson Solver");
+        sceneTitle.setFont(Font.font(20));
+        inputGrid.add(sceneTitle, 0, 0, 2, 1);
+
+        Label functionLabel = new Label("Ingrese la función f(x) en términos de x:");
+        inputGrid.add(functionLabel, 0, 1);
+        functionField = new TextField();
+        inputGrid.add(functionField, 1, 1);
+
+        Label derivativeLabel = new Label("Ingrese la derivada de la función f'(x) en términos de x:");
+        inputGrid.add(derivativeLabel, 0, 2);
+        derivativeField = new TextField();
+        inputGrid.add(derivativeField, 1, 2);
+
+        Label initialValueLabel = new Label("Ingrese el valor inicial para x:");
+        inputGrid.add(initialValueLabel, 0, 3);
+        initialValueField = new TextField();
+        inputGrid.add(initialValueField, 1, 3);
+
+        Label errorLabel = new Label("Ingrese el error permitido:");
+        inputGrid.add(errorLabel, 0, 4);
+        errorField = new TextField();
+        inputGrid.add(errorField, 1, 4);
+
+        Button solveButton = new Button("Resolver");
+        solveButton.setOnAction(e -> solve());
+        inputGrid.add(solveButton, 1, 5);
+
+        tableView = new TableView<>();
+        TableColumn<IterationResult, Double> xiColumn = new TableColumn<>("xi");
+        xiColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getXi()).asObject());
+        TableColumn<IterationResult, Double> fxiColumn = new TableColumn<>("f(xi)");
+        fxiColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getFxi()).asObject());
+        TableColumn<IterationResult, Double> fpxiColumn = new TableColumn<>("f'(xi)");
+        fpxiColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getFpxi()).asObject());
+        TableColumn<IterationResult, Double> xnextColumn = new TableColumn<>("xi+1");
+        xnextColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getXnext()).asObject());
+        TableColumn<IterationResult, Double> errorColumn = new TableColumn<>("Error");
+        errorColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getError()).asObject());
+        tableView.getColumns().addAll(xiColumn, fxiColumn, fpxiColumn, xnextColumn, errorColumn);
+//        TableColumn<IterationResult, Integer> iterationColumn = new TableColumn<>("Iteración");
+//        iterationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getIteration()).asObject());
+//        TableColumn<IterationResult, Double> xColumn = new TableColumn<>("x");
+//        xColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getX()).asObject());
+//        tableView.getColumns().addAll(iterationColumn, xColumn);
+
+        root.setCenter(inputGrid);
+        root.setBottom(tableView);
+
+        Scene scene = new Scene(root, 600, 400);
+        setScene(scene);
+        show();
     }
 
-    private void createUI() {
-        titleLabel = new Label("Método de Newton-Raphson");
-        equationLabel = new Label("Ecuación");
-        equationTextField = new TextField("");
-        equationBox = new HBox(equationLabel, equationTextField);
-        equationBox.setAlignment(Pos.CENTER);
-        equationBox.setSpacing(20);
+    private void solve() {
+        String functionString = functionField.getText();
+        String derivativeString = derivativeField.getText();
+        double initialValue = Double.parseDouble(initialValueField.getText());
+        double error = Double.parseDouble(errorField.getText());
 
-        graphButton = new Button("Graficar");
-        x0Label = new Label("x0: ");
-        x0TextField = new TextField("");
-        epsilonLabel = new Label("ep: ");
-        epsilonTextField = new TextField("");
-        parametersBox = new HBox(graphButton, x0Label, x0TextField, epsilonLabel, epsilonTextField);
-        parametersBox.setAlignment(Pos.CENTER);
-        parametersBox.setSpacing(20);
+        Function<Double, Double> function = x -> evaluateFunction(functionString, x);
+        Function<Double, Double> derivative = x -> evaluateFunction(derivativeString, x);
 
-        calculateButton = new Button("Calcular");
-        calculateButton.setOnAction(event -> calculateNewtonRaphson());
-        helpButton = new Button("Ayuda");
-        buttonsBox = new HBox(calculateButton, helpButton);
-        buttonsBox.setAlignment(Pos.CENTER);
-        buttonsBox.setSpacing(20);
+        ObservableList<IterationResult> iterationResults = FXCollections.observableArrayList();
+        double result = findRoot(function, derivative, initialValue, error, iterationResults);
 
-        vbox = new VBox(titleLabel, equationBox, parametersBox, buttonsBox);
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setSpacing(20);
-        scene = new Scene(vbox);
+        tableView.setItems(iterationResults);
+        tableView.refresh();
+
+        // Show the result label
+        Label resultLabel = new Label("La raíz encontrada es: " + result);
+        BorderPane.setAlignment(resultLabel, Pos.CENTER);
+        ((BorderPane) getScene().getRoot()).setTop(resultLabel);
     }
 
-    private void calculateNewtonRaphson() {
-        String equationString = equationTextField.getText();
-        String x0String = x0TextField.getText();
-        String epsilonString = epsilonTextField.getText();
-
-        // Parse equation
-        ExpressionBuilder builder = new ExpressionBuilder(equationString)
-                .variables("x")
-                .functions(Functions.getBuiltinFunction("sin"),
-                        Functions.getBuiltinFunction("cos"),
-                        Functions.getBuiltinFunction("tan"),
-                        Functions.getBuiltinFunction("asin"),
-                        Functions.getBuiltinFunction("acos"),
-                        Functions.getBuiltinFunction("atan"));
-        Expression expression = builder.build();
-
-        // Parse parameters
-        double x0 = Double.parseDouble(x0String);
-        double epsilon = Double.parseDouble(epsilonString);
-
-        // Solve Newton-Raphson method
-        NewtonRaphsonSolver solver = new NewtonRaphsonSolver(expression, x0, epsilon);
-        //Alert alert = solver.solve();
-        //alert.showAndWait();
+    private double evaluateFunction(String functionString, double x) {
+        // Implementation remains the same
+        return parseExpression(functionString.replaceAll("x", Double.toString(x)));
     }
-    private class NewtonRaphsonSolver {
-        private Expression expression;
-        private double x0;
-        private double epsilon;
+    private double parseExpression(String expression) {
+            return new Object() {
+                int pos = -1, ch;
 
-        public NewtonRaphsonSolver(Expression expression, double x0, double epsilon) {
-            this.expression = expression;
-            this.x0 = x0;
-            this.epsilon = epsilon;
-        }
+                void nextChar() {
+                    ch = (++pos < expression.length()) ? expression.charAt(pos) : -1;
+                }
 
-//        public Alert solve() {
-//            ObservableList<IteracionNR> iterations = FXCollections.observableArrayList();
-//            double x = x0;
-//            double error = Double.MAX_VALUE;
-//            int iter = 1;
+                boolean eat(int charToEat) {
+                    while (ch == ' ') nextChar();
+                    if (ch == charToEat) {
+                        nextChar();
+                        return true;
+                    }
+                    return false;
+                }
+
+                double parse() {
+                    nextChar();
+                    double x = parseExpressionLevel1();
+                    if (pos < expression.length()) throw new RuntimeException("Caracter inesperado: " + (char) ch);
+                    return x;
+                }
+
+                double parseExpressionLevel1() {
+                    double x = parseExpressionLevel2();
+                    for (;;) {
+                        if (eat('+')) x += parseExpressionLevel2(); // adición
+                        else if (eat('-')) x -= parseExpressionLevel2(); // sustracción
+                        else return x;
+                    }
+                }
+
+                double parseExpressionLevel2() {
+                    double x = parseExpressionLevel3();
+                    for (;;) {
+                        if (eat('*')) x *= parseExpressionLevel3(); // multiplicación
+                        else if (eat('/')) x /= parseExpressionLevel3(); // división
+                        else return x;
+                    }
+                }
+
+                double parseExpressionLevel3() {
+                    double x = parseExpressionLevel4();
+                    for (;;) {
+                        if (eat('^')) x = Math.pow(x, parseExpressionLevel4()); // exponente
+                        else return x;
+                    }
+                }
+
+                double parseExpressionLevel4() {
+                    if (eat('+')) return parseExpressionLevel4(); // + operador unario
+                    if (eat('-')) return -parseExpressionLevel4(); // - operador unario
+                    double x;
+                    int startPos = this.pos;
+                    if (eat('(')) { // paréntesis
+                        x = parseExpressionLevel1();
+                        eat(')');
+                    } else if ((ch >= '0' && ch <= '9') || ch == '.') { // números
+                        while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
+                        x = Double.parseDouble(expression.substring(startPos, this.pos));
+                    } else {
+                        throw new RuntimeException("Caracter inesperado: " + (char) ch);
+                    }
+                    return x;
+                }
+            }.parse();
+    }
+
+    private double findRoot(Function<Double, Double> function, Function<Double, Double> derivative, double initialValue, double error, ObservableList<IterationResult> iterationResults) {
+        double xi = initialValue;
+        double xiNext;
+        double fxi;
+        double fpxi;
+        double errorValue;
+
+        do {
+            fxi = function.apply(xi);
+            fpxi = derivative.apply(xi);
+            xiNext = xi - fxi / fpxi;
+            errorValue = Math.abs((xiNext-xi)/xiNext)*100;
+            iterationResults.add(new IterationResult(xi, fxi, fpxi, xiNext, errorValue));
+            xi = xiNext;
+        } while (errorValue > error);
+
+        return xiNext;
+    }
+    }
+//        double x0 = initialValue;
+//        double x1;
+//        int iterations = 0;
 //
-//            while (error > epsilon) {
-//                double fx = expression.setVariable("x", x).evaluate();
-//                double dfx = expression.setVariable("x", x).differentiate("x").evaluate();
-//                double xNext = x - fx / dfx;
-//                error = Math.abs((xNext - x) / xNext) * 100;
-//                iterations.add(new IteracionNR(iter, x, fx, error));
-//                x = xNext;
-//                iter++;
+//        do {
+//            x1 = x0 - function.apply(x0) / derivative.apply(x0);
+//            double relativeError = Math.abs((x1 - x0) / x1) * 100;
+//            iterationResults.add(new IterationResult(xi, fxi, fpxi, xiNext, errorValue));
+//            //iterationResults.add(new IterationResult(iterations, x1)); // Add iteration result
+//            if (relativeError < error) {
+//                break;
 //            }
-/*
-            TableView<IteracionNR> tableView = new TableView<>();
-            TableColumn<IteracionNR, Integer> iterationCol = new TableColumn<>("Iteración");
-            iterationCol.setCellValueFactory(cellData -> cellData.getValue().getIterationProperty().asObject());
-            TableColumn<IteracionNR, Double> xCol = new TableColumn<>("x");
-            xCol.setCellValueFactory(cellData -> cellData.getValue().getXProperty().asObject());
-            TableColumn<IteracionNR, Double> fxCol = new TableColumn<>("f(x)");
-            fxCol.setCellValueFactory(cellData -> cellData.getValue().getFxProperty().asObject());
-            TableColumn<IteracionNR, Double> errorCol = new TableColumn<>("Error (%)");
-            errorCol.setCellValueFactory(cellData -> cellData.getValue().getErrorProperty().asObject());
+//            x0 = x1;
+//            iterations++;
+//        } while (true);
+//
+//        return x1;
+//    }
 
-            tableView.getColumns().addAll(iterationCol, xCol, fxCol, errorCol);
-            tableView.setItems(iterations);
+     class IterationResult {
+        private final double xi;
+        private final double fxi;
+        private final double fpxi;
+        private final double xnext;
+        private final double error;
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Resultado del método de Newton-Raphson");
-            alert.setHeaderText(null);
-            alert.getDialogPane().setContent(tableView);
-            alert.getDialogPane().setPrefSize(800, 600);
-            return alert;
-        }*/
+        public IterationResult(double xi, double fxi, double fpxi, double xnext, double error) {
+            this.xi = xi;
+            this.fxi = fxi;
+            this.fpxi = fpxi;
+            this.xnext = xnext;
+            this.error = error;
+        }
+
+        public double getXi() {
+            return xi;
+        }
+
+        public double getFxi() {
+            return fxi;
+        }
+
+        public double getFpxi() {
+            return fpxi;
+        }
+
+        public double getXnext() {
+            return xnext;
+        }
+
+        public double getError() {
+            return error;
         }
     }
 
-
+//        private final int iteration;
+//        private final double x;
+//
+//        public IterationResult(int iteration, double x) {
+//            this.iteration = iteration;
+//            this.x = x;
+//        }
+//
+//        public int getIteration() {
+//            return iteration;
+//        }
+//
+//        public double getX() {
+//            return x;
+//        }
+//    }
+//}
 //    private Scene escena;
 //    private VBox vbContenedor, vbSup, vbIzq, vbDer;
 //    private HBox hbEc, hbInf, hbXi, hbep, hbDerivada;
 //    private Label lblTitle, lblEc, lblXi, lblep, lblDerivada;
-//    private TextField txtec, txtXi,  txtep, txtDerivada;
+//    private TextField txtec, txtXi, txtep, txtDerivada;
 //    private Button btnGraficar, btnCalcular, btnAyuda;
 //
-//    public NewtonRaphson(){
+//    public NewtonRaphson() {
 //        CrearUI();
 //        this.setTitle("Newton-Raphson");
 //        this.setScene(escena);
@@ -173,36 +299,37 @@ public class NewtonRaphson extends Stage {
 //        lblEc = new Label("Ecuación");
 //        lblDerivada = new Label("Derivada");
 //        txtec = new TextField("");
-//        txtDerivada =  new TextField("");
-//        hbEc = new HBox(lblEc,txtec);
+//        txtDerivada = new TextField("");
+//        hbEc = new HBox(lblEc, txtec);
 //        hbEc.setSpacing(9);
-//        hbDerivada = new HBox(lblDerivada,txtDerivada);
-//        vbSup = new VBox(lblTitle,hbEc, hbDerivada);
+//        hbDerivada = new HBox(lblDerivada, txtDerivada);
+//        vbSup = new VBox(lblTitle, hbEc, hbDerivada);
 //        vbSup.setAlignment(Pos.CENTER);
 //        vbSup.setSpacing(20);
 //
 //        btnGraficar = new Button("Graficar");
 //        lblXi = new Label("Xi: ");
 //        txtXi = new TextField("");
-//        hbXi = new HBox(lblXi,txtXi);
+//        hbXi = new HBox(lblXi, txtXi);
 //        lblep = new Label("ep: ");
 //        txtep = new TextField("");
-//        hbep = new HBox(lblep,txtep);
-//        vbIzq = new VBox(btnGraficar,hbXi,hbep);
+//        hbep = new HBox(lblep, txtep);
+//        vbIzq = new VBox(btnGraficar, hbXi, hbep);
 //        vbIzq.setAlignment(Pos.CENTER_LEFT);
 //        vbIzq.setSpacing(20);
 //
 //        btnCalcular = new Button("Calcular");
 //        btnAyuda = new Button("Ayuda");
-//        vbDer = new VBox(btnCalcular,btnAyuda);
+//        vbDer = new VBox(btnCalcular, btnAyuda);
 //        vbDer.setAlignment(Pos.CENTER_RIGHT);
 //        vbDer.setSpacing(20);
 //
 //        hbInf = new HBox(vbIzq, vbDer);
 //        hbInf.setSpacing(60);
 //
-//        vbContenedor = new VBox(vbSup,hbInf);
+//        vbContenedor = new VBox(vbSup, hbInf);
 //        vbContenedor.setSpacing(20);
 //        escena = new Scene(vbContenedor);
- //   }
+//    }
+//}
 

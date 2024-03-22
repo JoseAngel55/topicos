@@ -16,6 +16,7 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.function.Functions;
 import java.util.function.Function;
+import javafx.scene.control.ScrollPane;
 
 public class ReglaFalsaGUI extends Stage {
     private Scene escena;
@@ -30,8 +31,8 @@ public class ReglaFalsaGUI extends Stage {
         this.setTitle("Regla Falsa");
         this.setScene(escena);
         this.show();
-        this.setWidth(450);
-        this.setHeight(350);
+        this.setWidth(800);
+        this.setHeight(800);
     }
 
     private void CrearUI() {
@@ -110,7 +111,7 @@ public class ReglaFalsaGUI extends Stage {
         stage.show();
     }
 
-    private Alert rf(){
+    private void rf(){
         String str = txtec.getText();
         String stra = txta.getText();
         String strb = txtb.getText();
@@ -151,14 +152,24 @@ public class ReglaFalsaGUI extends Stage {
 
         tableView.getColumns().addAll(iteracionCol, aCol, bCol, xiCol, fxiCol, errorCol);
         tableView.setItems(iteraciones);
+        tableView.setPrefSize(400,400);
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Resultado del método");
-        alert.setHeaderText(null);
-        alert.getDialogPane().setContent(tableView);
-        alert.getDialogPane().setPrefSize(700,700);
-        alert.showAndWait();
-        return alert;
+        VBox vbox = new VBox(tableView);
+        vbox.setSpacing(10);
+
+        ScrollPane scrollPane = new ScrollPane(vbox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        hbInf.getChildren().add(scrollPane);
+
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Resultado del método");
+//        alert.setHeaderText(null);
+//        alert.getDialogPane().setContent(tableView);
+//        alert.getDialogPane().setPrefSize(700,700);
+//        alert.showAndWait();
+//        return alert;
     }
 
     private double resolverMetodo(Function<Double, Double> f, double a, double b, double ep, ObservableList<IteracionRF> iteraciones) {
