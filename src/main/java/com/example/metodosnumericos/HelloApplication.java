@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
     private BorderPane bdpPanel;
-    private Label lblIntegrantes, lblAngel, lblRobert, lblRafael, lblYahir, lblJAngel, lblTitle;
+    private Label lblIntegrantes, lblAngel, lblRobert, lblRafael, lblTitle;
     private VBox vbContenedor, vbContenedorSup;
     private Button iniciar;
 
